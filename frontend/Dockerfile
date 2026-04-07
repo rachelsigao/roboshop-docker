@@ -1,4 +1,6 @@
 FROM nginx:1.29.0-alpine
+# To install and enable Bash. Alpine Linux image does not include Bash by default.
+RUN apk add --no-cache bash curl
 RUN rm /etc/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 RUN mkdir -p /var/cache/nginx/client_temp && \
         mkdir -p /var/cache/nginx/proxy_temp && \

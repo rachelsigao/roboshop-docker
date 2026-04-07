@@ -1,5 +1,7 @@
 # Stage 1: Build
 FROM python:3.9.23-alpine3.22 AS builder
+# To install and enable Bash. Alpine Linux image does not include Bash by default.
+RUN apk add --no-cache bash curl
 WORKDIR /build
 # Install build dependencies
 RUN apk add --no-cache python3-dev build-base linux-headers pcre-dev
