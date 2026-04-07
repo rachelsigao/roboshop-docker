@@ -1,4 +1,6 @@
 FROM node:20-alpine3.21 AS builder
+# To install and enable Bash. Alpine Linux image does not include Bash by default.
+RUN apk add --no-cache bash curl
 WORKDIR /opt/server
 COPY package.json .
 COPY *.js .
