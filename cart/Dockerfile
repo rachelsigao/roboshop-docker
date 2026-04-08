@@ -1,6 +1,6 @@
 FROM node:20
-# To install and enable Bash. Alpine Linux image does not include Bash by default.
-RUN apk add --no-cache bash curl
+# node:20 is Debian-based Alpine image, so we need to install bash and curl with apt.
+RUN apt-get update && apt-get install -y --no-install-recommends bash curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/server
 COPY package.json .
 COPY *.js .
