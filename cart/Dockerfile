@@ -1,6 +1,4 @@
 FROM node:20
-# node:20 is Debian-based Alpine image, so we need to install bash and curl with apt.
-RUN apt-get update && apt-get install -y --no-install-recommends bash curl && rm -rf /var/lib/apt/lists/*
 WORKDIR /opt/server
 COPY package.json .
 COPY *.js .
