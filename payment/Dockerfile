@@ -1,12 +1,16 @@
 # Stage 1: Build
 FROM python:3.9.23-alpine3.22 AS builder
+EXPOSE 8080
 # To install and enable Bash. Alpine Linux image does not include Bash by default.
 RUN apk add --no-cache bash curl
 WORKDIR /build
 # Install build dependencies
 RUN apk add --no-cache python3-dev build-base linux-headers pcre-dev
 COPY requirements.txt .
+COPY *.py .
+COPY payment.ini .
 RUN pip3 install --no-cache-dir --prefix=/install -r requirements.txt
+CMD ["uwsgi", "--ini", "payment.ini"]
 
 
 # Stage 2: Final image
@@ -32,6 +36,5 @@ CMD ["uwsgi", "--ini", "payment.ini"]
 # WORKDIR /opt/server
 # COPY requirements.txt .
 # COPY *.py .
-# COPY payment.ini .
 # RUN pip3 install -r requirements.txt
 # CMD ["uwsgi", "--ini", "payment.ini"]
