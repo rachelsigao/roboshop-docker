@@ -3,50 +3,59 @@ networks:
     driver: bridge
     name: roboshop
     #external: true #I created network already using docker network create roboshop
+
 volumes:
   mongodb:
   redis:
   mysql:
   rabbitmq: # docker volume create rabbitmq
+
 services:
   mongodb:
     image: rachelsigao/mongodb:v1
     container_name: mongodb
     volumes:
     - mongodb:/data/db
+
   catalogue:
     image: rachelsigao/catalogue:v1
     container_name: catalogue
     depends_on:
     - mongodb
+
   redis:
     image: redis:7.0
     container_name: redis
     volumes:
     - redis:/data
+
   user:
     image: rachelsigao/user:v1
     container_name: user
     depends_on:
     - redis
     - mongodb
+
   cart:
     image: rachelsigao/cart:v1
     container_name: cart
     depends_on:
     - catalogue
     - redis
+
   mysql:
     image: rachelsigao/mysql:v1
     container_name: mysql
     volumes:
     - mysql:/var/lib/mysql
+
   shipping:
     image: rachelsigao/shipping:v1
     container_name: shipping
     depends_on:
     - mysql
     - cart
+
   rabbitmq:
     image: rabbitmq:3
     container_name: rabbitmq
@@ -55,6 +64,7 @@ services:
       RABBITMQ_DEFAULT_PASS: roboshop123
     volumes:
     - rabbitmq:/var/lib/rabbitmq
+
   # payment:
   #   image: rachelsigao/payment:v1
   #   container_name: payment
@@ -70,16 +80,17 @@ services:
   #   - rabbitmq
   #   - cart
   #   - user
-  frontend:
-    image: rachelsigao/frontend:v1
-    container_name: frontend
-    ports:
-    - "80:80"
-    depends_on:
-    - catalogue
-    - user
-    - cart
-    - shipping
-    - payment
+  
+  # frontend:
+  #   image: rachelsigao/frontend:v1
+  #   container_name: frontend
+  #   ports:
+  #   - "80:80"
+  #   depends_on:
+  #   - catalogue
+  #   - user
+  #   - cart
+  #   - shipping
+  #   - payment
       
 
