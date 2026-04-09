@@ -1,7 +1,9 @@
 FROM node:20-alpine3.21 AS builder
 # To install and enable Bash. Alpine Linux image does not include Bash by default.
 RUN apk add --no-cache bash curl
+RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
 WORKDIR /opt/server
+USER roboshop
 COPY package.json .
 COPY *.js .
 RUN npm install
