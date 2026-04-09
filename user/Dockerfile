@@ -3,13 +3,14 @@ FROM node:20-alpine3.21 AS builder
 RUN apk add --no-cache bash curl
 RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
 WORKDIR /opt/server
-USER roboshop
 COPY package.json .
 COPY *.js .
 RUN npm install
+RUN chown -R roboshop:roboshop /opt/server
 ENV MONGO_URL="mongodb://mongodb:27017/users" \
     REDIS_URL="redis://redis:6379" \
     MONGO=true
+USER roboshop
 CMD ["node","server.js"]
 
 # FROM node:20-alpine3.21
