@@ -1,4 +1,12 @@
-# Stage 1: Build
+# FROM python:3.9
+# EXPOSE 8080
+# WORKDIR /opt/server
+# COPY requirements.txt .
+# COPY *.py .
+# RUN pip3 install -r requirements.txt
+# CMD ["uwsgi", "--ini", "payment.ini"]
+
+# Stage-1: Builder
 FROM python:3.9.23-alpine3.22 AS builder
 EXPOSE 8080
 # To install and enable Bash. Alpine Linux image does not include Bash by default.
@@ -13,7 +21,7 @@ RUN pip3 install --no-cache-dir --prefix=/install -r requirements.txt
 CMD ["uwsgi", "--ini", "payment.ini"]
 
 
-# Stage 2: Final image
+# Stage-2: Final image
 FROM python:3.9.23-alpine3.22
 EXPOSE 8080
 WORKDIR /opt/server
@@ -30,11 +38,3 @@ COPY --chown=roboshop:roboshop *.py .
 CMD ["uwsgi", "--ini", "payment.ini"]
 
 
-#CMD ["sleep", "1000"]
-# FROM python:3.9
-# EXPOSE 8080
-# WORKDIR /opt/server
-# COPY requirements.txt .
-# COPY *.py .
-# RUN pip3 install -r requirements.txt
-# CMD ["uwsgi", "--ini", "payment.ini"]

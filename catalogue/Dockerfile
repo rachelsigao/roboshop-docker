@@ -1,32 +1,33 @@
-FROM node:20-alpine3.21 AS builder
-# To install and enable Bash. Alpine Linux image does not include Bash by default.
-RUN apk add --no-cache bash curl
-WORKDIR /opt/server
-COPY package.json .
-COPY *.js .
-RUN npm install
-ENV MONGO="true" \
-    MONGO_URL="mongodb://mongodb:27017/catalogue"
-CMD ["node","server.js"]
-
-# FROM node:20-alpine3.21
-# RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
-# ENV MONGO="true" \
-#     MONGO_URL="mongodb://mongodb:27017/catalogue"
-# WORKDIR /opt/server
-# USER roboshop
-# COPY --from=builder /opt/server /opt/server
-# CMD ["node","server.js"]
-
-
-# FROM node:20-alpine3.21
+# FROM node:20-alpine3.21 AS builder
+# # To install and enable Bash. Alpine Linux image does not include Bash by default.
+# RUN apk add --no-cache bash curl
 # RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
 # WORKDIR /opt/server
 # COPY package.json .
 # COPY *.js .
 # RUN npm install
 # RUN chown -R roboshop:roboshop /opt/server
-# ENV MONGO="true" \
-#     MONGO_URL="mongodb://mongodb:27017/catalogue"
+# ENV MONGO_URL="mongodb://mongodb:27017/catalogue" \
+#     REDIS_URL="redis://redis:6379" \
+#     MONGO=true
 # USER roboshop
 # CMD ["node","server.js"]
+
+# Stage-1: Builder
+FROM node:20-alpine3.21 AS builder
+WORKDIR /opt/server
+COPY package.json .
+COPY *.js .
+RUN npm install
+
+
+# Stage-2: Final image
+FROM node:20-alpine3.21
+RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
+ENV MONGO="true" \
+    MONGO_URL="mongodb://mongodb:27017/catalogue"
+WORKDIR /opt/server
+USER roboshop
+COPY --from=builder /opt/server /opt/server
+CMD ["node","server.js"]
+
