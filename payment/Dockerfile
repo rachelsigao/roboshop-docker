@@ -8,30 +8,23 @@
 
 # Stage-1: Builder
 FROM python:3.9.23-alpine3.22 AS builder
-EXPOSE 8080
-# To install and enable Bash. Alpine Linux image does not include Bash by default.
-RUN apk add --no-cache bash curl
 WORKDIR /build
 # Install build dependencies
 RUN apk add --no-cache python3-dev build-base linux-headers pcre-dev
 COPY requirements.txt .
-COPY *.py .
-COPY payment.ini .
 RUN pip3 install --no-cache-dir --prefix=/install -r requirements.txt
-CMD ["uwsgi", "--ini", "payment.ini"]
-
 
 # Stage-2: Final image
 FROM python:3.9.23-alpine3.22
 EXPOSE 8080
 WORKDIR /opt/server
-# Runtime dependencies only
-RUN apk add --no-cache pcre
-# Create app user
-RUN addgroup -S roboshop && adduser -S roboshop -G roboshop
-USER roboshop
-# Copy installed Python packages from builder
+# Runtime dependencies and app user (combined into one layer)
+RUN apk add --no-cache pcre && \
+    addgroup -S roboshop && adduser -S roboshop -G roboshop
+# Copy installed Python packages from builder (as root, before USER drop)
 COPY --from=builder /install /usr/local
+# Drop to non-root user
+USER roboshop
 # Copy application code
 COPY --chown=roboshop:roboshop payment.ini .
 COPY --chown=roboshop:roboshop *.py .
